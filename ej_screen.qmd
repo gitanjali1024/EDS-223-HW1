@@ -1,0 +1,85 @@
+# Comparing Superfund Proximity and Income in Harris County, TX
+
+Harris County is home to many major Superfund sites, or areas that have been heavily polluted by hazardous waste. This document looks at the proximity of residents to these sites compared to the proportion of the population that is classified as low income.
+
+## Load packages and read in the data
+```{r}
+#| warning: false
+#| message: false
+#| output: false
+
+library(tidyverse)
+library(sf)
+library(here)
+library(tmap)
+
+# read in geodatabase of EJScreen data at the Census Block Group level
+ejscreen <- sf::st_read(here::here("data", 
+"ejscreen","EJSCREEN_2023_BG_StatePct_with_AS_CNMI_GU_VI.gdb")) 
+
+# filter to Texas
+texas <- ejscreen %>%
+  dplyr::filter(ST_ABBREV == "TX") 
+
+# filter to Harris County
+harris <- texas %>%
+  dplyr::filter(CNTY_NAME %in% c("Harris County"))
+
+
+```
+
+## Visualize Data
+```{r}
+#| warning: false
+#| message: false
+#| fig-width: 7.5
+
+# Plot Superfund Proximity Percentile
+tm_shape(harris) +
+  tm_polygons(
+    fill = "P_PNPL",
+    lwd = 0.2,
+    fill.scale = tm_scale(values = "brewer.rd_pu"),
+    fill.legend = tm_legend(title = "Superfund Proximity Percentile", 
+    position = tm_pos_out("right"))) + # Unit is percentile
+      tm_scalebar(position = c("left", "bottom")) +
+      tm_compass(position = c("left", "bottom")) +
+      tm_title("Superfund Proximity in Harris County, TX")
+  
+  
+```
+
+
+```{r}
+#| warning: false
+#| message: false
+#| fig-width: 7.5
+
+# Plot Low Income Percent
+tm_shape(harris) +
+  tm_polygons(
+    fill = "LOWINCPCT",
+    values = "brewer.blues",
+    lwd = 0.2,
+    fill.scale = tm_scale(values = "brewer.blues"),
+    fill.legend = tm_legend(title = "Proportion Low Income", 
+    position = tm_pos_out("right")) # Unit is proportion
+  ) +
+    tm_scalebar(position = c("left", "bottom")) +
+    tm_compass(position = c("left", "bottom")) +
+    tm_title("Percent Low Income in Harris County, TX")
+```
+
+
+## Map Interpretation and Analysis
+  Harris County contains many major Superfund sites including the San Jacinto River Waste Pits, Brio Refining Inc, Jones Roas Ground Water Plume and many more. Living near Superfund sites is known to be very harmful to human health, and I was interested in if there was a relationship between income and proximity to these sites.
+  
+   I created two maps, one showing the Percentile for Superfund Proximity, with 100 being the closest and 0 being the furthest. It is important to note however that because there are so many Superfunds in Harris County, there are no areas on the map where the proximity index is less than 40. There are six very clear hotspots on the map, mostly concentrated in the central and southern parts of the county, while the very northern and western areas are further away. 
+   
+   I also mapped the percent of the the population who is low income, which is defined as being less than the federal poverty level. This map has a less clear pattern than the Superfund map, however the northwest area of the county does seem to be the overall most affluent. Based on these maps we definitely cannot conclude that there is a relationship between income and Superfund proximity, but it would be an interesting issue to dive further into.
+
+   Further analysis could include expanding this map out of Harris county to assess how this trend looks in a less polluted area and also looking at other potential factors like race, air pollution, or age that could confound this relationship.
+
+## Data Citations
+   This data comes from the the US EPA EJScreen data. The original data no longer exists, but an unofficial copy can be found [here](https://pedp-ejscreen.azurewebsites.net/)
+
