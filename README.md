@@ -1,7 +1,7 @@
 # Income and Superfund Proximity in Harris County, TX
 
 
-This repository conveys information on environmental justice issues in Harris County, TX. Harris County is home to several major superfund sites, and this repo contains maps looking at the relationship between income and proximity to these supefund sites.
+This repository conveys information on environmental justice issues in Harris County, TX. Harris County is home to several major superfund sites, and this repo contains maps looking at the relationship between income and proximity to these superfund sites.
 
 EDS-223-HW1
 ├── data
